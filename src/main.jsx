@@ -32,13 +32,18 @@ export default class Main extends Component {
         let width = this.state.width;
         let height = this.state.height;
         let aspectRatio = height / width;
-        if ( height > width) aspectRatio = width / height ;
+
+        // スマホカメラは常に横向きで取得されてしまうので、入れ替える
+        if ( height > width ) {
+            let width = this.state.height;
+            let height = this.state.width;
+        }
 
         navigator.mediaDevices.getUserMedia({
             video: {
                 width: width,
                 height: height,
-                aspectRatio: aspectRatio, // アスペクト比
+                aspectRatio: aspectRatio,
                 facingMode:  "environment" // バックカメラを使う指定
             },
             audio: false
