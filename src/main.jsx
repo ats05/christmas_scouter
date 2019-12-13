@@ -25,13 +25,14 @@ export default class Main extends Component {
             this.animate();
         })
         this.animate = this.animate.bind(this);
+        this.nowInPredict= false; // 計算に時間がかかるので、処理が渋滞しないようにするためのフラグ
     }
     componentDidMount() {
         this.videoElement = this.refs.videoElement;
         let width = this.state.width;
         let height = this.state.height;
-        let aspectRatio = width / height;
-        if ( height > width) aspectRatio = height / width;
+        let aspectRatio = height / width;
+        if ( height > width) aspectRatio = width / height ;
 
         navigator.mediaDevices.getUserMedia({
             video: {
@@ -52,26 +53,27 @@ export default class Main extends Component {
     }
     animate() {
         if (this.state.model !== null) {
-            let tensor = tf.tidy(() => {
-                const channels = 3;
-                let inputImage = tf.browser.fromPixels(this.videoElement, 3);
-                let float_caster = tf.cast(inputImage, 'float32');
-                let dims_expander = float_caster.expandDims(0);
-                let resized = tf.image.resizeBilinear(dims_expander, [299, 299]);
-                let normalized = tf.div(tf.sub(resized, [0]), [255]);
-                return normalized;
-            })
-            new Promise((resolve, reject) => {
-                let result = this.state.model.predict(tensor).array(); // 値はarray()で取り出せる
-                resolve(result);
-            }).then(result => {
-                this.setState({score: Math.round(result[0][0] * 1000) / 10});
-                this.animate(); // 計算が終わってから次の処理が走るようにする
-            });
+            if(!this.nowInPredict) {
+                this.nowInPredict = false;
+                let tensor = tf.tidy(() => {
+                    const channels = 3;
+                    let inputImage = tf.browser.fromPixels(this.videoElement, 3);
+                    let float_caster = tf.cast(inputImage, 'float32');
+                    let dims_expander = float_caster.expandDims(0);
+                    let resized = tf.image.resizeBilinear(dims_expander, [299, 299]);
+                    let normalized = tf.div(tf.sub(resized, [0]), [255]);
+                    return normalized;
+                })
+                new Promise((resolve, reject) => {
+                    let result = this.state.model.predict(tensor).array(); // 値はarray()で取り出せる
+                    resolve(result);
+                }).then(result => {
+                    this.setState({score: Math.round(result[0][0] * 1000) / 10});
+                    this.nowInPredict = true;
+                });
+            }
         }
-        else {
-            this.animate();
-        }
+        this.animate(); // 計算が終わってから次の処理が走るようにする
     }
     render() {
         return (
