@@ -11,7 +11,6 @@ export default class Main extends Component {
         let width = window.parent.screen.width;
         let height = window.parent.screen.height;
 
-
         this.state = {
             nowInPlay: true,
             width: width,
@@ -30,10 +29,15 @@ export default class Main extends Component {
 
     }
     componentDidMount() {
-        this.videoElement = this.refs.videoElement
+        this.videoElement = this.refs.videoElement;
+        let width = this.state.width;
+        let height = this.state.height;
+
         navigator.mediaDevices.getUserMedia({
             video: {
-                aspectRatio: this.state.width / this.state.height, // アスペクト比
+                width: width,
+                height: height,
+                aspectRatio: width / height, // アスペクト比
                 facingMode:  "environment" // バックカメラを使う指定
             },
             audio: false
@@ -80,9 +84,8 @@ export default class Main extends Component {
 }
 
 const Video = styled.video`
-width: 100%;
-max-width: 100%;
-height: 100%;
+width: 100vw;
+height: 100vh;
 object-fit: fill;
 display: block;
 margin: 0 auto;
