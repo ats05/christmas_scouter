@@ -24,15 +24,18 @@ export default class Main extends Component {
             this.setState({model: model})
             this.animate();
         })
-
         this.animate = this.animate.bind(this);
-
     }
     componentDidMount() {
         this.videoElement = this.refs.videoElement;
         let width = this.state.width;
         let height = this.state.height;
 
+        // 縦幅のほうが大きい場合、スマホ縦向きとして数字を入れ替える
+        if ( height > width ) {
+            let width = this.state.height;
+            let height = this.state.width;
+        }
         navigator.mediaDevices.getUserMedia({
             video: {
                 width: width,
