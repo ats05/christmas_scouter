@@ -30,17 +30,14 @@ export default class Main extends Component {
         this.videoElement = this.refs.videoElement;
         let width = this.state.width;
         let height = this.state.height;
+        let aspectRatio = width / height;
+        if ( height > width) aspectRatio = height / width;
 
-        // 縦幅のほうが大きい場合、スマホ縦向きとして数字を入れ替える
-        if ( height > width ) {
-            let width = this.state.height;
-            let height = this.state.width;
-        }
         navigator.mediaDevices.getUserMedia({
             video: {
                 width: width,
                 height: height,
-                aspectRatio: width / height, // アスペクト比
+                aspectRatio: aspectRatio, // アスペクト比
                 facingMode:  "environment" // バックカメラを使う指定
             },
             audio: false
