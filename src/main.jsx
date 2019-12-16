@@ -33,12 +33,6 @@ export default class Main extends Component {
         let height = this.state.height;
         let aspectRatio = height / width;
 
-        // スマホカメラは常に横向きで取得されてしまうので、入れ替える
-        if ( height > width ) {
-            let width = this.state.height;
-            let height = this.state.width;
-        }
-
         navigator.mediaDevices.getUserMedia({
             video: {
                 width: width,
@@ -93,7 +87,7 @@ export default class Main extends Component {
 const Video = styled.video`
 width: 100vw;
 height: 100vh;
-object-fit: fill;
+/* object-fit: fill; */
 display: block;
 margin: 0 auto;
 `
