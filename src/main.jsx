@@ -53,7 +53,7 @@ export default class Main extends Component {
     animate() {
         if (this.state.model !== null) {
             if(!this.nowInPredict) {
-                this.nowInPredict = false;
+                this.nowInPredict = true;
                 let tensor = tf.tidy(() => {
                     const channels = 3;
                     let inputImage = tf.browser.fromPixels(this.videoElement, 3);
@@ -68,8 +68,9 @@ export default class Main extends Component {
                     resolve(result);
                 }).then(result => {
                     this.setState({score: Math.round(result[0][0] * 1000) / 10});
-                    this.nowInPredict = true;
+                    this.nowInPredict = false;
                 });
+
             }
         }
         this.animate(); // 計算が終わってから次の処理が走るようにする
