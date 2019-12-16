@@ -78,7 +78,7 @@ export default class Main extends Component {
     render() {
         return (
             <div>
-                <Video ref="videoElement" width={this.state.width} height={this.state.height} playsInline/>
+                <Video ref="videoElement"  playsInline/>
                 <Score score={this.state.score} />
             </div>
         );
