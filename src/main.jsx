@@ -12,7 +12,7 @@ export default class Main extends Component {
         let height = window.parent.screen.height;
 
         this.state = {
-            nowInPlay: true,
+            nowInPlay: false,
             width: width,
             height: height,
             model: null,
@@ -22,16 +22,21 @@ export default class Main extends Component {
         // 変換したモデルを読み込む
         tf.loadGraphModel('./assets/web_model/model.json').then((model) => {
             this.setState({model: model})
-            this.animate();
         })
         this.animate = this.animate.bind(this);
         this.nowInPredict= false; // 計算に時間がかかるので、処理が渋滞しないようにするためのフラグ
+
+
     }
     componentDidMount() {
         this.videoElement = this.refs.videoElement;
         let width = this.state.width;
         let height = this.state.height;
         let aspectRatio = height / width;
+
+        this.videoElement.oncanplay = () => {
+            this.setState({nowInPlay: true});
+        }
 
         navigator.mediaDevices.getUserMedia({
             video: {
@@ -51,6 +56,7 @@ export default class Main extends Component {
         });
     }
     animate() {
+        console.log(this.nowInPredict);
         if (this.state.model !== null) {
             if(!this.nowInPredict) {
                 this.nowInPredict = true;
@@ -67,15 +73,23 @@ export default class Main extends Component {
                     let result = this.state.model.predict(tensor).array(); // 値はarray()で取り出せる
                     resolve(result);
                 }).then(result => {
+                    console.log(this.state.score);
                     this.setState({score: Math.round(result[0][0] * 1000) / 10});
                     this.nowInPredict = false;
+                    this.animate()
                 });
-
             }
         }
-        this.animate(); // 計算が終わってから次の処理が走るようにする
+        else {
+            // setTimeout(() => {
+            //     this.animate();
+            // }, 1000);
+        }
     }
     render() {
+        if (this.state.model !== null && this.state.nowInPlay) {
+            this.animate();
+        }
         return (
             <div>
                 <Video ref="videoElement"  playsInline/>
