@@ -86,8 +86,8 @@ export default class Main extends Component {
 }
 
 const Video = styled.video`
-width: 100vw;
-height: 100vh;
+/* width: 100vw; */
+/* height: 100vh; */
 /* object-fit: fill; */
 display: block;
 margin: 0 auto;
