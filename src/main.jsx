@@ -17,6 +17,7 @@ export default class Main extends Component {
             height: height,
             model: null,
             score: "--.-",
+            animate: null
         }
 
         // 変換したモデルを読み込む
@@ -25,6 +26,7 @@ export default class Main extends Component {
         })
         this.animate = this.animate.bind(this);
         this.nowInPredict= false; // 計算に時間がかかるので、処理が渋滞しないようにするためのフラグ
+        this.videoElement = null;
 
 
     }
@@ -36,12 +38,10 @@ export default class Main extends Component {
 
         this.videoElement.oncanplay = () => {
             this.setState({nowInPlay: true});
-        }
+        };
 
         navigator.mediaDevices.getUserMedia({
             video: {
-                // width: width,
-                // height: height,
                 aspectRatio: aspectRatio,
                 facingMode:  "environment" // バックカメラを使う指定
             },
@@ -49,6 +49,7 @@ export default class Main extends Component {
         }).then((stream) => {
             this.videoElement.srcObject = stream;
             this.videoElement.play();
+            this.animate();
         })
         .catch(function(err) {
             // カメラが読み込めなかった時の処理をなんか入れる
@@ -76,20 +77,14 @@ export default class Main extends Component {
                     console.log(this.state.score);
                     this.setState({score: Math.round(result[0][0] * 1000) / 10});
                     this.nowInPredict = false;
-                    this.animate()
                 });
             }
         }
-        else {
-            // setTimeout(() => {
-            //     this.animate();
-            // }, 1000);
-        }
+        this.setState({
+            animate: window.requestAnimationFrame(this.animate)
+        });
     }
     render() {
-        if (this.state.model !== null && this.state.nowInPlay) {
-            this.animate();
-        }
         return (
             <div>
                 <Video ref="videoElement"  playsInline/>
