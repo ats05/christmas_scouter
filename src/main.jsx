@@ -35,8 +35,8 @@ export default class Main extends Component {
 
         navigator.mediaDevices.getUserMedia({
             video: {
-                width: width,
-                height: height,
+                // width: width,
+                // height: height,
                 aspectRatio: aspectRatio,
                 facingMode:  "environment" // バックカメラを使う指定
             },
